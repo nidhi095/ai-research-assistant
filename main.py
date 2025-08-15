@@ -23,3 +23,13 @@ for row in data:
 # Count most common words
 freq = Counter(words)
 print(freq.most_common(10))
+
+# Create list of sentences (one sentence per CSV row joined together)
+sentences = [" ".join(row) for row in data]
+
+keyword = input("Enter keyword to search: ")
+matches = [s for s in sentences if keyword.lower() in s.lower()]
+print(f"Found {len(matches)} matches:")
+for m in matches:
+    print("-", m)
+
