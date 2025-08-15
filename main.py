@@ -1,4 +1,5 @@
 import csv
+from collections import Counter
 
 def load_csv(file_path):
     try:
@@ -12,3 +13,13 @@ def load_csv(file_path):
 # Test loading CSV
 data = load_csv("sample.csv")
 print(data)
+
+# Extract words from CSV data
+words = []
+for row in data:
+    for cell in row:
+        words.extend(cell.split())  # split by spaces
+
+# Count most common words
+freq = Counter(words)
+print(freq.most_common(10))
