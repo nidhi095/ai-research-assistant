@@ -1,6 +1,15 @@
 import csv
 from collections import Counter
 
+class DataAnalyzer:
+    def __init__(self, data):
+        self.data = data
+    
+    def preview(self, rows=5):
+        for row in self.data[:rows]:
+            print(row)
+
+
 def load_csv(file_path):
     try:
         with open(file_path, newline='') as csvfile:
@@ -12,7 +21,10 @@ def load_csv(file_path):
 
 # Test loading CSV
 data = load_csv("sample.csv")
-print(data)
+
+analyzer = DataAnalyzer(data)
+analyzer.preview()
+
 
 # Extract words from CSV data
 words = []
