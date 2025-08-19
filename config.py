@@ -7,5 +7,7 @@ project_metadata = {
         "CSV data analysis",
         "Word frequency counter",
         "Keyword search"
+        "NumPy mean calculation",
+        "Unique values per column"
     ]
 }
