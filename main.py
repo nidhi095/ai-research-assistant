@@ -2,6 +2,8 @@ import csv
 import numpy as np
 from collections import Counter
 from config import project_metadata
+from utils import load_json
+
 
 print("Project Author:", project_metadata["author"])
 print("Version:", project_metadata["version"])
@@ -72,3 +74,5 @@ for m in matches:
 # ---- Test unique values ----
 print("\nUnique Ages:", analyzer.unique_values(1))
 print("Unique Cities:", analyzer.unique_values(2))
+print("\nLoaded JSON data:", load_json("sample.json"))
+

@@ -1,0 +1,5 @@
+{
+  "name": "AI Research Assistant",
+  "version": "1.0",
+  "features": ["CSV data analysis", "Word frequency counter", "Keyword search", "JSON support"]
+}
