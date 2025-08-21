@@ -23,6 +23,15 @@ class DataAnalyzer:
         if not self.data:
             return set()
         return set(row[col_idx] for row in self.data[1:] if len(row) > col_idx and row[col_idx])
+    def summarize_column(self, col_idx):
+    """Compute min, max, mean of a numeric column."""
+    values = [float(row[col_idx]) for row in self.data[1:] if row[col_idx]]
+    return {
+        "min": min(values),
+        "max": max(values),
+        "mean": np.mean(values)
+    }
+
 
 
 def load_csv(file_path):
@@ -75,4 +84,6 @@ for m in matches:
 print("\nUnique Ages:", analyzer.unique_values(1))
 print("Unique Cities:", analyzer.unique_values(2))
 print("\nLoaded JSON data:", load_json("sample.json"))
+print("\nSummary of Ages:", analyzer.summarize_column(1))
+
 
