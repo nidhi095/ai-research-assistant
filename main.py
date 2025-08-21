@@ -23,15 +23,15 @@ class DataAnalyzer:
         if not self.data:
             return set()
         return set(row[col_idx] for row in self.data[1:] if len(row) > col_idx and row[col_idx])
-    def summarize_column(self, col_idx):
-    """Compute min, max, mean of a numeric column."""
-    values = [float(row[col_idx]) for row in self.data[1:] if row[col_idx]]
-    return {
-        "min": min(values),
-        "max": max(values),
-        "mean": np.mean(values)
-    }
 
+    def summarize_column(self, col_idx):
+        """Compute min, max, mean of a numeric column."""
+        values = [float(row[col_idx]) for row in self.data[1:] if row[col_idx]]
+        return {
+            "min": min(values),
+            "max": max(values),
+            "mean": np.mean(values)
+        }
 
 
 def load_csv(file_path):
@@ -83,7 +83,21 @@ for m in matches:
 # ---- Test unique values ----
 print("\nUnique Ages:", analyzer.unique_values(1))
 print("Unique Cities:", analyzer.unique_values(2))
-print("\nLoaded JSON data:", load_json("sample.json"))
+
+# ---- JSON Data Handling ----
+print("\nLoaded JSON data:")
+json_data = load_json("sample.json")
+print(json_data)
+
+# Example: if JSON contains thresholds or metadata, use it
+if "threshold" in json_data:
+    threshold = json_data["threshold"]
+    avg_age = analyzer.summarize_column(1)["mean"]
+    print(f"\nThreshold from JSON: {threshold}")
+    if avg_age > threshold:
+        print("Average age exceeds threshold!")
+    else:
+        print("Average age is within safe range.")
+
+# ---- Summary Stats ----
 print("\nSummary of Ages:", analyzer.summarize_column(1))
-
-
