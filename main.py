@@ -2,7 +2,7 @@ import csv
 import numpy as np
 from collections import Counter
 from config import project_metadata
-from utils import load_json
+from utils import load_json, clean_empty_rows, convert_to_float
 
 
 print("Project Author:", project_metadata["author"])
@@ -54,26 +54,29 @@ print("\n--- Project Metadata ---")
 for key, value in project_metadata.items():
     print(f"{key}: {value}")
 
-# Load and preview CSV
+# Load and clean CSV
 data = load_csv("sample.csv")
+data = clean_empty_rows(data)
+data = convert_to_float(data, 1)  # assume column 1 is numeric (e.g., Age)
+
 analyzer = DataAnalyzer(data)
 analyzer.preview()
 
 # Show column mean
 print("Average Age:", column_mean(data, 1))
 
-# Extract words
+# Extract words (convert everything to string to avoid float error)
 words = []
 for row in data:
     for cell in row:
-        words.extend(cell.split())
+        words.extend(str(cell).split())
 
 # Word frequency
 freq = Counter(words)
 print(freq.most_common(10))
 
 # Keyword search
-sentences = [" ".join(row) for row in data]
+sentences = [" ".join(str(cell) for cell in row) for row in data]
 keyword = input("Enter keyword to search: ")
 matches = [s for s in sentences if keyword.lower() in s.lower()]
 print(f"Found {len(matches)} matches:")
