@@ -1,7 +1,14 @@
 # src/algorithms.py
 
 def quicksort(arr):
-    """Simple recursive quicksort that returns a new sorted list."""
+    """
+    Quicksort: returns a new sorted list.
+
+    Complexity:
+        - Average time: O(n log n)
+        - Worst-case time: O(n^2) (when pivot splits are very unbalanced)
+        - Space: O(n) for recursion + new lists (this simple implementation is not in-place)
+    """
     if len(arr) <= 1:
         return arr
     pivot = arr[len(arr) // 2]
@@ -12,7 +19,16 @@ def quicksort(arr):
 
 
 def binary_search(arr, x):
-    """Iterative binary search on a sorted list. Returns index or -1 if not found."""
+    """
+    Binary search on a sorted list. Returns the index of x, or -1 if not found.
+
+    Requirements:
+        - 'arr' must be sorted in non-decreasing order.
+
+    Complexity:
+        - Time: O(log n)
+        - Space: O(1)
+    """
     lo, hi = 0, len(arr) - 1
     while lo <= hi:
         mid = (lo + hi) // 2
