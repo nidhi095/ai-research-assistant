@@ -5,7 +5,33 @@ from collections import Counter
 from config import project_metadata
 from utils.json_loader import load_json
 from utils.data_cleaner import clean_empty_rows, convert_to_float
+import pandas as pd
+from transformers import pipeline
+from sklearn.feature_extraction.text import TfidfVectorizer
+import PyPDF2
+from docx import Document
+import os
 
+# ---- Windows fixes ----
+os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"  # disables symlink warning
+
+print("Project Author:", project_metadata["author"])
+print("Version:", project_metadata["version"])
+print("Features:", ", ".join(project_metadata["features"]))
+
+# ---- CSV Analyzer ----
+def load_csv(file_path):
+    try:
+        with open(file_path, newline='') as csvfile:
+            data = list(csv.reader(csvfile))
+            return data
+    except FileNotFoundError:
+        print("File not found!")
+        return []
+
+def column_mean(data, col_idx):
+    values = [float(row[col_idx]) for row in data[1:] if row[col_idx]]
+    return np.mean(values)
 
 class DataAnalyzer:
     def __init__(self, data):
@@ -17,96 +43,75 @@ class DataAnalyzer:
             print(row)
 
     def unique_values(self, col_idx):
-        """Return all unique values from a given column index."""
         if not self.data:
             return set()
         return set(row[col_idx] for row in self.data[1:] if len(row) > col_idx and row[col_idx])
 
     def summarize_column(self, col_idx):
-        """Compute min, max, mean of a numeric column."""
         values = [float(row[col_idx]) for row in self.data[1:] if row[col_idx]]
-        return {
-            "min": min(values),
-            "max": max(values),
-            "mean": np.mean(values)
-        }
+        return {"min": min(values), "max": max(values), "mean": np.mean(values)}
 
+# ---- Load and clean CSV ----
+data = load_csv("sample.csv")
+data = clean_empty_rows(data)
+data = convert_to_float(data, 1)
 
-def load_csv(file_path):
-    try:
-        with open(file_path, newline='') as csvfile:
-            data = list(csv.reader(csvfile))
-            return data
-    except FileNotFoundError:
-        print(f"File '{file_path}' not found!")
-        return []
+analyzer = DataAnalyzer(data)
+analyzer.preview()
+print("Average Age:", column_mean(data, 1))
 
+# ---- Word Frequency & Keyword Search ----
+words = []
+for row in data:
+    for cell in row:
+        words.extend(str(cell).split())
+freq = Counter(words)
+print("\nTop 10 Word Frequencies:", freq.most_common(10))
 
-def column_mean(data, col_idx):
-    values = [float(row[col_idx]) for row in data[1:] if row[col_idx]]
-    return np.mean(values)
+sentences = [" ".join(str(cell) for cell in row) for row in data]
+keyword = input("Enter keyword to search: ")
+matches = [s for s in sentences if keyword.lower() in s.lower()]
+print(f"Found {len(matches)} matches:")
+for m in matches:
+    print("-", m)
 
+print("\nUnique Ages:", analyzer.unique_values(1))
+print("Unique Cities:", analyzer.unique_values(2))
 
-def main():
-    # ---- Project Metadata ----
-    print("Project Author:", project_metadata["author"])
-    print("Version:", project_metadata["version"])
-    print("Features:", ", ".join(project_metadata["features"]))
+# ---- JSON Data Handling ----
+json_data = load_json("sample.json")
+print("\nLoaded JSON data:", json_data)
 
-    print("\n--- Project Metadata ---")
-    for key, value in project_metadata.items():
-        print(f"{key}: {value}")
+# ---- PDF/Doc Summarization ----
+def read_pdf(file_path):
+    text = ""
+    with open(file_path, 'rb') as f:
+        reader = PyPDF2.PdfReader(f)
+        for page in reader.pages:
+            text += page.extract_text()
+    return text
 
-    # ---- Load and Clean CSV ----
-    data = load_csv("sample.csv")
-    data = clean_empty_rows(data)
-    data = convert_to_float(data, 1)  # assuming column 1 is numeric
+def read_docx(file_path):
+    doc = Document(file_path)
+    text = "\n".join([para.text for para in doc.paragraphs])
+    return text
 
-    analyzer = DataAnalyzer(data)
-    analyzer.preview()
+# Load document (PDF or DOCX or TXT)
+doc_text = read_pdf("sample.pdf")  # or read_docx("sample.docx") or open("sample.txt").read()
 
-    # Show column mean
-    print("\nAverage Age:", column_mean(data, 1))
+# ---- Smaller summarization model for Windows ----
+summarizer = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")  # smaller model
+summary = summarizer(doc_text[:1000], max_length=150, min_length=50, do_sample=False)
+print("\nDocument Summary:", summary[0]['summary_text'])
 
-    # ---- Word Frequency ----
-    words = []
-    for row in data:
-        for cell in row:
-            words.extend(str(cell).split())
+# Keyword extraction
+vectorizer = TfidfVectorizer(stop_words='english', max_features=10)
+X = vectorizer.fit_transform([doc_text])
+keywords = vectorizer.get_feature_names_out()
+print("Top Keywords in Document:", keywords)
 
-    freq = Counter(words)
-    print("\nTop 10 Word Frequencies:", freq.most_common(10))
-
-    # ---- Keyword Search ----
-    sentences = [" ".join(str(cell) for cell in row) for row in data]
-    keyword = input("\nEnter keyword to search: ")
-    matches = [s for s in sentences if keyword.lower() in s.lower()]
-    print(f"Found {len(matches)} matches:")
-    for m in matches:
-        print("-", m)
-
-    # ---- Unique Values ----
-    print("\nUnique Ages:", analyzer.unique_values(1))
-    print("Unique Cities:", analyzer.unique_values(2))
-
-    # ---- JSON Data Handling ----
-    print("\nLoaded JSON data:")
-    json_data = load_json("sample.json")
-    print(json_data)
-
-    if "threshold" in json_data:
-        threshold = json_data["threshold"]
-        avg_age = analyzer.summarize_column(1)["mean"]
-        print(f"\nThreshold from JSON: {threshold}")
-        if avg_age > threshold:
-            print("Average age exceeds threshold!")
-        else:
-            print("Average age is within safe range.")
-
-    # ---- Summary Stats ----
-    summary = {k: float(v) for k, v in analyzer.summarize_column(1).items()}
-    print("\nSummary of Ages:", summary)
-
-
-if __name__ == "__main__":
-    main()
+# Q&A
+qa = pipeline("question-answering", model="distilbert-base-uncased-distilled-squad")  # small QA model
+question = input("Ask a question about the document: ")
+answer = qa(question=question, context=doc_text[:2000])
+print("Answer:", answer['answer'])

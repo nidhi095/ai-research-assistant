@@ -1,1 +1,3 @@
-This is a sample text file for the AI Research Assistant. 
+Artificial Intelligence (AI) is a field of computer science that aims to create intelligent machines. 
+It has applications in healthcare, finance, autonomous vehicles, and more. 
+Machine learning and deep learning are core components of AI.
