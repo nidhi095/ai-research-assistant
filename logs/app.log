@@ -1,26 +1,26 @@
-2025-08-26 20:39:00,002 INFO [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+2025-08-26 20:39:00,002 INFO 
  * Running on http://127.0.0.1:5000
 2025-08-26 20:39:00,002 INFO [33mPress CTRL+C to quit[0m
 2025-08-26 20:39:00,010 INFO  * Restarting with stat
 2025-08-26 20:39:00,498 WARNING  * Debugger is active!
-2025-08-26 20:39:00,503 INFO  * Debugger PIN: 535-475-322
-2025-08-26 20:45:32,919 INFO [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+2025-08-26 20:39:00,503 INFO  * Debugger PIN: ***-***-***
+2025-08-26 20:45:32,919 INFO 
  * Running on http://127.0.0.1:5000
 2025-08-26 20:45:32,919 INFO [33mPress CTRL+C to quit[0m
 2025-08-26 20:45:32,922 INFO  * Restarting with stat
 2025-08-26 20:45:33,299 WARNING  * Debugger is active!
-2025-08-26 20:45:33,303 INFO  * Debugger PIN: 535-475-322
-2025-08-26 20:46:30,493 INFO [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+2025-08-26 20:45:33,303 INFO  * Debugger PIN: ***-***-***
+2025-08-26 20:46:30,493 INFO 
  * Running on http://127.0.0.1:5000
 2025-08-26 20:46:30,493 INFO [33mPress CTRL+C to quit[0m
 2025-08-26 20:46:30,495 INFO  * Restarting with stat
 2025-08-26 20:46:30,841 WARNING  * Debugger is active!
-2025-08-26 20:46:30,843 INFO  * Debugger PIN: 535-475-322
-2025-08-26 20:48:09,534 INFO [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+2025-08-26 20:46:30,843 INFO  * Debugger PIN: ***-***-***
+2025-08-26 20:48:09,534 INFO 
  * Running on http://127.0.0.1:5000
 2025-08-26 20:48:09,534 INFO [33mPress CTRL+C to quit[0m
 2025-08-26 20:48:09,537 INFO  * Restarting with stat
 2025-08-26 20:48:09,914 WARNING  * Debugger is active!
-2025-08-26 20:48:09,917 INFO  * Debugger PIN: 535-475-322
+2025-08-26 20:48:09,917 INFO  * Debugger PIN: ***-***-***
 2025-08-26 20:51:53,231 INFO Uploaded sample.txt size=60
-2025-08-26 20:51:53,233 INFO 127.0.0.1 - - [26/Aug/2025 20:51:53] "POST /upload HTTP/1.1" 200 -
+2025-08-26 20:51:53,233 INFO 127.0.0.1 - - [26/Aug/2025 20:51:53] 
