@@ -1,12 +1,16 @@
-import requests
+# utils/json_loader.py
 import json
-import os
 
-def fetch_json(url, out='data/remote.json'):
-    os.makedirs(os.path.dirname(out), exist_ok=True)
-    r = requests.get(url)
-    r.raise_for_status()
-    data = r.json()
-    with open(out, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
-    return out
+def load_json(file_path):
+    """
+    Load JSON file and return dictionary.
+    """
+    try:
+        with open(file_path, "r") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        print(f"File {file_path} not found!")
+        return {}
+    except json.JSONDecodeError:
+        print(f"Error decoding JSON in {file_path}!")
+        return {}

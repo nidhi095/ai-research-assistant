@@ -1,13 +1,10 @@
+# main.py
 import csv
 import numpy as np
 from collections import Counter
 from config import project_metadata
-from utils import load_json, clean_empty_rows, convert_to_float
-
-
-print("Project Author:", project_metadata["author"])
-print("Version:", project_metadata["version"])
-print("Features:", ", ".join(project_metadata["features"]))
+from utils.json_loader import load_json
+from utils.data_cleaner import clean_empty_rows, convert_to_float
 
 
 class DataAnalyzer:
@@ -15,6 +12,7 @@ class DataAnalyzer:
         self.data = data
     
     def preview(self, rows=5):
+        print("\n--- Data Preview ---")
         for row in self.data[:rows]:
             print(row)
 
@@ -40,7 +38,7 @@ def load_csv(file_path):
             data = list(csv.reader(csvfile))
             return data
     except FileNotFoundError:
-        print("File not found!")
+        print(f"File '{file_path}' not found!")
         return []
 
 
@@ -49,58 +47,66 @@ def column_mean(data, col_idx):
     return np.mean(values)
 
 
-# ---- MAIN EXECUTION ----
-print("\n--- Project Metadata ---")
-for key, value in project_metadata.items():
-    print(f"{key}: {value}")
+def main():
+    # ---- Project Metadata ----
+    print("Project Author:", project_metadata["author"])
+    print("Version:", project_metadata["version"])
+    print("Features:", ", ".join(project_metadata["features"]))
 
-# Load and clean CSV
-data = load_csv("sample.csv")
-data = clean_empty_rows(data)
-data = convert_to_float(data, 1)  # assume column 1 is numeric (e.g., Age)
+    print("\n--- Project Metadata ---")
+    for key, value in project_metadata.items():
+        print(f"{key}: {value}")
 
-analyzer = DataAnalyzer(data)
-analyzer.preview()
+    # ---- Load and Clean CSV ----
+    data = load_csv("sample.csv")
+    data = clean_empty_rows(data)
+    data = convert_to_float(data, 1)  # assuming column 1 is numeric
 
-# Show column mean
-print("Average Age:", column_mean(data, 1))
+    analyzer = DataAnalyzer(data)
+    analyzer.preview()
 
-# Extract words (convert everything to string to avoid float error)
-words = []
-for row in data:
-    for cell in row:
-        words.extend(str(cell).split())
+    # Show column mean
+    print("\nAverage Age:", column_mean(data, 1))
 
-# Word frequency
-freq = Counter(words)
-print(freq.most_common(10))
+    # ---- Word Frequency ----
+    words = []
+    for row in data:
+        for cell in row:
+            words.extend(str(cell).split())
 
-# Keyword search
-sentences = [" ".join(str(cell) for cell in row) for row in data]
-keyword = input("Enter keyword to search: ")
-matches = [s for s in sentences if keyword.lower() in s.lower()]
-print(f"Found {len(matches)} matches:")
-for m in matches:
-    print("-", m)
+    freq = Counter(words)
+    print("\nTop 10 Word Frequencies:", freq.most_common(10))
 
-# ---- Test unique values ----
-print("\nUnique Ages:", analyzer.unique_values(1))
-print("Unique Cities:", analyzer.unique_values(2))
+    # ---- Keyword Search ----
+    sentences = [" ".join(str(cell) for cell in row) for row in data]
+    keyword = input("\nEnter keyword to search: ")
+    matches = [s for s in sentences if keyword.lower() in s.lower()]
+    print(f"Found {len(matches)} matches:")
+    for m in matches:
+        print("-", m)
 
-# ---- JSON Data Handling ----
-print("\nLoaded JSON data:")
-json_data = load_json("sample.json")
-print(json_data)
+    # ---- Unique Values ----
+    print("\nUnique Ages:", analyzer.unique_values(1))
+    print("Unique Cities:", analyzer.unique_values(2))
 
-# Example: if JSON contains thresholds or metadata, use it
-if "threshold" in json_data:
-    threshold = json_data["threshold"]
-    avg_age = analyzer.summarize_column(1)["mean"]
-    print(f"\nThreshold from JSON: {threshold}")
-    if avg_age > threshold:
-        print("Average age exceeds threshold!")
-    else:
-        print("Average age is within safe range.")
+    # ---- JSON Data Handling ----
+    print("\nLoaded JSON data:")
+    json_data = load_json("sample.json")
+    print(json_data)
 
-# ---- Summary Stats ----
-print("\nSummary of Ages:", analyzer.summarize_column(1))
+    if "threshold" in json_data:
+        threshold = json_data["threshold"]
+        avg_age = analyzer.summarize_column(1)["mean"]
+        print(f"\nThreshold from JSON: {threshold}")
+        if avg_age > threshold:
+            print("Average age exceeds threshold!")
+        else:
+            print("Average age is within safe range.")
+
+    # ---- Summary Stats ----
+    summary = {k: float(v) for k, v in analyzer.summarize_column(1).items()}
+    print("\nSummary of Ages:", summary)
+
+
+if __name__ == "__main__":
+    main()
