@@ -1,4 +1,4 @@
-# 📸 AI Research Assistant Demo
+# AI Research Assistant Demo
 
 This document shows a quick demo of the AI Research Assistant project using screenshots.
 
